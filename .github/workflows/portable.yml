@@ -1,6 +1,8 @@
 name: Portable
 on:
   workflow_dispatch:
+  push:
+    branches: [portable]
 env:
   FORCE_COLOR: 1
   GRIST_SKIP_EXT_AUTOSETUP: 1
