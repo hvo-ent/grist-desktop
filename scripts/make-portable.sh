@@ -17,12 +17,14 @@ esac
 
 out=dist/GristPortable
 rm -rf "$out"
-mkdir -p "$out/GristData/docs"
 if [ "$os" = mac ]; then
+  mkdir -p "$out"
   cp -R "$src" "$out/"
 else
-  cp -R "$src"/. "$out/"
+  # move, not copy: Git Bash on Windows cannot recreate symlinks inside the app
+  mv "$src" "$out"
 fi
+mkdir -p "$out/GristData/docs"
 
 cat > "$out/GristData/settings.env" <<'ENV'
 # Grist Portable settings. Uncomment to change.
