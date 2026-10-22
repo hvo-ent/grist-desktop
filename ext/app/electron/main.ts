@@ -22,10 +22,12 @@ import * as packageJson from "ext/desktop.package.json";
 import { GristApp } from "app/electron/GristApp";
 import { loadConfig } from "app/electron/config";
 import { setupLogging } from "./logging";
+import { setupPortable } from "app/electron/portable";
 import { IS_TEST_MODE, testEmitOpenFile, filterArgvForCommander, installDialogStubs } from "app/electron/testMode";
 
 applyPatch();
 installDialogStubs();
+setupPortable();
 
 // Mimic the behavior of a packaged app, where argv will not include "electron" and its arguments.
 // Example:
