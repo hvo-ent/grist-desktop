@@ -18,6 +18,12 @@ jobs:
           - { os: macos-15-intel, target: x64 }
           - { os: macos-14,       target: arm64 }
     steps:
+      # yarn scripts start with .sh files, which cmd cannot run unaided.
+      - name: Set up bash association
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          cmd /c assoc .sh=bashscript
+          cmd /c ftype bashscript="%ProgramFiles%\Git\bin\bash.exe" "%1"
       - uses: actions/checkout@v4
         with:
           submodules: true
@@ -33,6 +39,7 @@ jobs:
         shell: bash
         run: yarn run setup
         env:
+          RUN_OS: ${{ matrix.os }}
           RUN_ARCH: ${{ matrix.target }}
       - name: Build
         shell: bash
