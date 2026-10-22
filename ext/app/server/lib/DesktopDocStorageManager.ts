@@ -10,6 +10,7 @@ import {ExternalStorageCreator} from "app/server/lib/ExternalStorage";
 import {GristServer} from "app/server/lib/GristServer";
 import {IDocStorageManager} from "app/server/lib/IDocStorageManager";
 import log from "app/server/lib/log";
+import { fromStoredPath } from "app/server/lib/portablePaths";
 
 export class DesktopDocStorageManager extends HostedStorageManager {
     // Document paths on disk are stored in the HomeDB. However, they need caching here to allow synchronous access,
@@ -42,7 +43,7 @@ export class DesktopDocStorageManager extends HostedStorageManager {
         for (const doc of await homeDb.getAllDocs()) {
             // Most Grist Desktop documents will have externalId set to their file path.
             // Some won't (e.g created in an older version), so try their default path.
-            const docPath = doc.options?.externalId || super.getPath(doc.id);
+            const docPath = fromStoredPath(doc.options?.externalId) || super.getPath(doc.id);
             if (docPath && fileExists(docPath)) {
                 this.registerDocPath(doc.id, docPath);
             }
