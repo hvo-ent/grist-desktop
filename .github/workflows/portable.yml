@@ -1,0 +1,48 @@
+name: Portable
+on:
+  workflow_dispatch:
+env:
+  FORCE_COLOR: 1
+  GRIST_SKIP_EXT_AUTOSETUP: 1
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-2022,   target: x64 }
+          - { os: ubuntu-22.04,   target: x64 }
+          - { os: macos-15-intel, target: x64 }
+          - { os: macos-14,       target: arm64 }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: yarn install --network-timeout 300000 --ignore-optional
+      - name: Setup
+        shell: bash
+        run: yarn run setup
+        env:
+          RUN_ARCH: ${{ matrix.target }}
+      - name: Build
+        shell: bash
+        run: yarn run build
+      - name: Package portable
+        shell: bash
+        run: yarn run electron:portable
+        env:
+          TARGET_ARCH: ${{ matrix.target }}
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'   # no code signing / notarization
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GristPortable-${{ matrix.os }}-${{ matrix.target }}
+          path: dist/GristPortable-*.zip
+          if-no-files-found: error
