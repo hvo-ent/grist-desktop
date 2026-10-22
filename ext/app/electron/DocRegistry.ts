@@ -2,6 +2,7 @@ import log from "app/server/lib/log";
 import * as path from "path";
 import { HomeDBManager } from "app/gen-server/lib/homedb/HomeDBManager";
 import { fileExists } from "app/electron/fileUtils";
+import { fromStoredPath, toStoredPath } from "app/server/lib/portablePaths";
 
 /*
 Doc registry is hard to remove.
@@ -41,7 +42,7 @@ export class DocRegistry {
     // Go over all documents we know about.
     for (const doc of await dr.db.getAllDocs()) {
       // All documents are supposed to have externalId set.
-      const docPath = doc.options?.externalId;
+      const docPath = fromStoredPath(doc.options?.externalId);
       if (docPath && fileExists(docPath)) {
         // Cache the two-way mapping docID <-> path.
         dr.idToPathMap.set(doc.id, docPath);
@@ -98,7 +99,7 @@ export class DocRegistry {
     const defaultUser = await this.getDefaultUser();
     const wss = this.db.unwrapQueryResult(await this.db.getOrgWorkspaces({userId: defaultUser.id}, 0));
     for (const doc of wss[0].docs) {
-      if (doc.options?.externalId === docPath) {
+      if (fromStoredPath(doc.options?.externalId) === docPath) {
         // We might be able to do better.
         throw Error("DocRegistry cache incoherent. Please try restarting the app.");
       }
@@ -108,7 +109,7 @@ export class DocRegistry {
       userId: defaultUser.id,
     }, wss[0].id, {
       name: path.basename(docPath, '.grist'),
-      options: { externalId: docPath },
+      options: { externalId: toStoredPath(docPath) },
     }));
     // Update the in-memory cache.
     this.pathToIdMap.set(docPath, document.id);
