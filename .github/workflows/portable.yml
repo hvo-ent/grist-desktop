@@ -16,7 +16,7 @@ jobs:
           - { os: windows-2022,   target: x64 }
           - { os: ubuntu-22.04,   target: x64 }
           - { os: macos-15-intel, target: x64 }
-          - { os: macos-14,       target: arm64 }
+          - { os: macos-15,       target: arm64 }
     steps:
       # yarn scripts start with .sh files, which cmd cannot run unaided.
       - name: Set up bash association
