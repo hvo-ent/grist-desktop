@@ -40,6 +40,7 @@
     "electron:linux:appimage": "electron-builder build --linux appimage",
     "electron:ci": "./scripts/ci.sh",
     "electron": "electron-builder build --publish never",
+    "electron:portable": "electron-builder build --publish never && bash ./scripts/make-portable.sh",
     "test": "./scripts/smoke-test.sh && yarn run test:electron",
     "test:electron": "node ./scripts/test-electron.js",
     "test:electron:upstream": "node ./scripts/test-electron.js --upstream",
@@ -58,8 +59,7 @@
     "win": {
       "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
       "target": [
-        {"target": "nsis"},
-        {"target": "zip"}
+        {"target": "dir"}
       ],
       "icon": "core/static/icons/grist.ico"
     },
@@ -74,7 +74,7 @@
       "gatekeeperAssess": false,
       "entitlements": "scripts/entitlements.mac.plist",
       "entitlementsInherit": "scripts/entitlements.mac.plist",
-      "target": "dmg"
+      "target": "dir"
     },
     "dmg": {
       "writeUpdateInfo": false
@@ -84,8 +84,7 @@
       "icon": "core/static/icons/grist.png",
       "category": "Office",
       "target": [
-        "AppImage",
-        "flatpak"
+        "dir"
       ]
     },
     "flatpak": {
